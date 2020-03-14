@@ -11,10 +11,13 @@ namespace SpaceCtrl.Data.Models.Database
         }
 
         public int Id { get; set; }
-        public Guid Guid { get; set; }
         public int Direction { get; set; }
         public DateTime CreateDate { get; set; }
+        public Guid DeviceKey { get; set; }
+        public int ImageId { get; set; }
 
+        public virtual Device DeviceKeyNavigation { get; set; }
+        public virtual Image Image { get; set; }
         public virtual ICollection<ObjectToClient> ObjectToClient { get; set; }
     }
 }

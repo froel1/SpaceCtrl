@@ -17,6 +17,7 @@ namespace SpaceCtrl.Data.Models.Database
 
         public virtual DbSet<Client> Client { get; set; }
         public virtual DbSet<Device> Device { get; set; }
+        public virtual DbSet<Image> Image { get; set; }
         public virtual DbSet<Object> Object { get; set; }
         public virtual DbSet<ObjectToClient> ObjectToClient { get; set; }
         public virtual DbSet<TargetGroup> TargetGroup { get; set; }
@@ -55,15 +56,11 @@ namespace SpaceCtrl.Data.Models.Database
 
             modelBuilder.Entity<Device>(entity =>
             {
-                entity.HasKey(e => new { e.Id, e.Key });
-
                 entity.ToTable("Device", "device");
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
-                entity.Property(e => e.Key)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.HasIndex(e => e.Key)
+                    .HasName("IX_Device")
+                    .IsUnique();
 
                 entity.HasOne(d => d.Target)
                     .WithMany(p => p.Device)
@@ -72,14 +69,41 @@ namespace SpaceCtrl.Data.Models.Database
                     .HasConstraintName("FK_Device_TargetGroup");
             });
 
+            modelBuilder.Entity<Image>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Object>(entity =>
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.DeviceKeyNavigation)
+                    .WithMany(p => p.Object)
+                    .HasPrincipalKey(p => p.Key)
+                    .HasForeignKey(d => d.DeviceKey)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Object_Device");
+
+                entity.HasOne(d => d.Image)
+                    .WithMany(p => p.Object)
+                    .HasForeignKey(d => d.ImageId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Object_Image");
             });
 
             modelBuilder.Entity<ObjectToClient>(entity =>
             {
-                entity.HasKey(e => new { e.ObjectId, e.ClientId });
+                entity.HasNoKey();
 
                 entity.ToTable("ObjectToClient", "client");
 
