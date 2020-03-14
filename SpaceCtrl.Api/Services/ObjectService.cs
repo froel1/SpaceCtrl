@@ -18,11 +18,14 @@ namespace SpaceCtrl.Api.Services
 
         public async Task AddAsync(CameraObject model)
         {
+            if (!DateTime.TryParse(model.Date, out var date))
+                date = DateTime.Now;
+
             var @object = new Data.Models.Database.Object
             {
                 DeviceKey = model.DeviceKey,
                 Direction = (int)model.Direction,
-                CreateDate = model.Date,
+                CreateDate = date,
                 ObjectToClient = model.Objects.Select(x => new ObjectToClient
                 {
                     ObjectGuid = x
