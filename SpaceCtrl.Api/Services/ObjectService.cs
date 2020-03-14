@@ -22,7 +22,7 @@ namespace SpaceCtrl.Api.Services
             {
                 DeviceKey = model.DeviceKey,
                 Direction = (int)model.Direction,
-                CreateDate = model.CreateDate,
+                CreateDate = model.Date,
                 ObjectToClient = model.Objects.Select(x => new ObjectToClient
                 {
                     ObjectGuid = x
@@ -31,6 +31,7 @@ namespace SpaceCtrl.Api.Services
             };
 
             await _dbContext.Object.AddAsync(@object);
+            await _dbContext.SaveChangesAsync();
         }
 
         private async Task<Image> SaveImage(CameraImage image) => await Task.FromResult(new Image

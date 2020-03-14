@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SpaceCtrl.Api.Models;
 using SpaceCtrl.Data.Models.Database;
 
@@ -22,6 +25,7 @@ namespace SpaceCtrl.Api.Services
                 TargetId = device.TargetId
             };
             await _dbContext.Device.AddAsync(newDevice);
+            await _dbContext.SaveChangesAsync();
         }
 
         /*public async Task<Models.Database.Device> GetDevice(string key)
@@ -39,5 +43,11 @@ namespace SpaceCtrl.Api.Services
 
             return data.Target.Client;
         }*/
+        public async Task<IEnumerable<DeviceModel>> GetDevicesAsync() => await _dbContext.Device.Select(x => new DeviceModel
+        {
+            Name = x.Name,
+            OrderIndex = x.OrderIndex,
+            Key = x.Key
+        }).ToListAsync();
     }
 }

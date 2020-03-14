@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SpaceCtrl.Api.Models.Settings;
+using SpaceCtrl.Api.Services;
 using SpaceCtrl.Data.Models.Database;
 
 namespace SpaceCtrl.Api
@@ -27,6 +28,8 @@ namespace SpaceCtrl.Api
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             ConfigureDatabase(services);
+
+            AddServices(services);
 
             services.AddSwaggerGen(opt =>
             {
@@ -54,6 +57,12 @@ namespace SpaceCtrl.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static void AddServices(IServiceCollection services)
+        {
+            services.AddScoped<DeviceService>();
+            services.AddScoped<ObjectService>();
         }
 
         private void ConfigureSwagger(IApplicationBuilder app)

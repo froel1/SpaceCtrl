@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SpaceCtrl.Api.Models;
 using SpaceCtrl.Api.Services;
+using SpaceCtrl.Data.Models.Database;
 
 namespace SpaceCtrl.Api.Controllers
 {
@@ -18,5 +21,8 @@ namespace SpaceCtrl.Api.Controllers
 
         [HttpPost("add")]
         public async Task AddNewCameraAsync(DeviceModel device) => await _service.AddAsync(device);
+
+        [HttpGet("list")]
+        public async Task<IEnumerable<DeviceModel>> GetDevicesAsync() => await _service.GetDevicesAsync();
     }
 }
