@@ -1,6 +1,6 @@
-﻿namespace SpaceCtrl.Front.Models.Options
+﻿namespace SpaceCtrl.Api.Models.Settings
 {
-    public class AppOptions
+    public class AppSettings
     {
         public SwaggerOptions Swagger { get; set; } = default!;
     }

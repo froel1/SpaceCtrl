@@ -1,16 +1,12 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SpaceCtrl.Api.Models.Camera;
-using SpaceCtrl.Api.Models.Client;
-using SpaceCtrl.Api.Models.Object;
-using SpaceCtrl.Data.Models.Database;
-using SpaceCtrl.Data.Services.Device;
+using SpaceCtrl.Api.Models;
+using SpaceCtrl.Api.Services;
 
 namespace SpaceCtrl.Api.Controllers
 {
-    [ApiController]
-    [Route("Device")]
-    public class DeviceController : ControllerBase
+    [Microsoft.AspNetCore.Components.Route("v1/device")]
+    public class DeviceController : BaseController
     {
         private readonly DeviceService _service;
 
@@ -19,19 +15,7 @@ namespace SpaceCtrl.Api.Controllers
             _service = service;
         }
 
-        [HttpGet("get")]
-        public async Task<ActionResult<Device>> Get(string key) => await _service.GetDevice(key);
-
-        /*[HttpPost]
-        public async Task<ActionResult> AddPerson([FromBody] ObjectModel model)
-        {
-            return Ok();
-        }*/
-
-        [HttpPost]
-        public async Task<ActionResult> CreatePerson([FromBody] NewClientModel model)
-        {
-            return Ok();
-        }
+        [HttpPost("add")]
+        public async Task AddNewCamera(DeviceModel device) => await _service.AddAsync(device);
     }
 }

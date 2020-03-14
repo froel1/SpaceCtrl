@@ -1,4 +1,4 @@
-﻿namespace SpaceCtrl.Api.Models.Object
+﻿namespace SpaceCtrl.Api.Models.Camera
 {
     public enum Direction
     {

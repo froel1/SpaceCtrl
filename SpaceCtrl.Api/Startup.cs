@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SpaceCtrl.Api.Models;
+using SpaceCtrl.Api.Models.Settings;
 using SpaceCtrl.Data.Models.Database;
 
 namespace SpaceCtrl.Api
@@ -43,6 +43,22 @@ namespace SpaceCtrl.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void ConfigureSwagger(IApplicationBuilder app)
+        {
+            var settings = new AppSettings();
+            Configuration.Bind(settings);
+
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = settings.Swagger.JsonRoute;
+            });
+
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint(settings.Swagger.UiEndpoint, settings.Swagger.Description);
             });
         }
 

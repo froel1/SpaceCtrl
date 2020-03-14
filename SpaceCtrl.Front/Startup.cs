@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 using SpaceCtrl.Data.Interfaces;
 using SpaceCtrl.Data.Models.Database;
 using SpaceCtrl.Data.Services;
-using SpaceCtrl.Front.Models.Options;
+using SpaceCtrl.Front.Models.Settings;
 
 namespace SpaceCtrl.Front
 {
@@ -69,7 +69,7 @@ namespace SpaceCtrl.Front
 
         private void ConfigureSwagger(IApplicationBuilder app)
         {
-            var settings = new AppOptions();
+            var settings = new AppSettings();
             Configuration.Bind(settings);
 
             app.UseSwagger(options =>

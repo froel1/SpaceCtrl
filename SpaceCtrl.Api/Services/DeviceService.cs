@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using SpaceCtrl.Api.Models;
 using SpaceCtrl.Data.Models.Database;
 
-namespace SpaceCtrl.Data.Services.Device
+namespace SpaceCtrl.Api.Services
 {
     public class DeviceService
     {
@@ -14,7 +13,18 @@ namespace SpaceCtrl.Data.Services.Device
             _dbContext = dbContext;
         }
 
-        public async Task<Models.Database.Device> GetDevice(string key)
+        public async Task AddAsync(DeviceModel device)
+        {
+            var newDevice = new Device
+            {
+                Key = device.Key,
+                Name = device.Name ?? string.Empty,
+                TargetId = device.TargetId
+            };
+            await _dbContext.Device.AddAsync(newDevice);
+        }
+
+        /*public async Task<Models.Database.Device> GetDevice(string key)
         {
             var device = _dbContext.Device.FirstOrDefaultAsync(x => x.Key == key);
             return await device;
@@ -28,6 +38,6 @@ namespace SpaceCtrl.Data.Services.Device
                 .FirstOrDefaultAsync(x => x.Key == ipCamKey);
 
             return data.Target.Client;
-        }
+        }*/
     }
 }

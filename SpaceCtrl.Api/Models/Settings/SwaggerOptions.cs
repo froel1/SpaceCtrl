@@ -1,4 +1,4 @@
-﻿namespace SpaceCtrl.Front.Models.Options
+﻿namespace SpaceCtrl.Api.Models.Settings
 {
     public class SwaggerOptions
     {
