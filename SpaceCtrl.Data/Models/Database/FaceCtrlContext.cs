@@ -2,13 +2,13 @@
 
 namespace SpaceCtrl.Data.Models.Database
 {
-    public partial class FaceCtrlContext : DbContext
+    public partial class SpaceCtrlContext : DbContext
     {
-        public FaceCtrlContext()
+        public SpaceCtrlContext()
         {
         }
 
-        public FaceCtrlContext(DbContextOptions<FaceCtrlContext> options)
+        public SpaceCtrlContext(DbContextOptions<SpaceCtrlContext> options)
             : base(options)
         {
         }

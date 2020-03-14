@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FaceCtrl.Data\SpaceCtrl.Data.csproj" />
+    <ProjectReference Include="..\SpaceCtrl.Data\SpaceCtrl.Data.csproj" />
   </ItemGroup>
 
 

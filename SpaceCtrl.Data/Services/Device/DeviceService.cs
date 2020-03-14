@@ -7,9 +7,9 @@ namespace SpaceCtrl.Data.Services.Device
 {
     public class DeviceService
     {
-        private readonly FaceCtrlContext _dbContext;
+        private readonly SpaceCtrlContext _dbContext;
 
-        public DeviceService(FaceCtrlContext dbContext)
+        public DeviceService(SpaceCtrlContext dbContext)
         {
             _dbContext = dbContext;
         }

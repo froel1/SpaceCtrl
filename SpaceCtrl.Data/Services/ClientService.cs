@@ -9,26 +9,26 @@ namespace SpaceCtrl.Data.Services
 {
     public class ClientService
     {
-        private readonly FaceCtrlContext _dbContext;
-        private readonly IFaceCtrlCamera _faceCtrl;
+        private readonly SpaceCtrlContext _dbContext;
+        private readonly ISpaceCtrlCamera _SpaceCtrl;
 
-        public ClientService(FaceCtrlContext dbContext, IFaceCtrlCamera faceCtrl)
+        public ClientService(SpaceCtrlContext dbContext, ISpaceCtrlCamera SpaceCtrl)
         {
             _dbContext = dbContext;
-            _faceCtrl = faceCtrl;
+            _SpaceCtrl = SpaceCtrl;
         }
 
         public async Task AddNewAsync(Client client, List<string> images)
         {
             _dbContext.Client.Add(client);
-            await _faceCtrl.SendNewObjectAsync(new CameraObject(client.Guid, images));
+            await _SpaceCtrl.SendNewObjectAsync(new CameraObject(client.Guid, images));
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task RemoveClientAsync(int clientId)
         {
             var client = await _dbContext.Client.FirstAsync(x => x.Id == clientId);
-            await _faceCtrl.RemoveObjectAsync(client.Guid);
+            await _SpaceCtrl.RemoveObjectAsync(client.Guid);
             client.IsActive = !client.IsActive;
             await _dbContext.SaveChangesAsync();
         }

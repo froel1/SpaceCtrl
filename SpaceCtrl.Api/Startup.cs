@@ -48,7 +48,7 @@ namespace SpaceCtrl.Api
 
         private void ConfigureDatabase(IServiceCollection services)
         {
-            services.AddDbContext<FaceCtrlContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<SpaceCtrlContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
     }
 }

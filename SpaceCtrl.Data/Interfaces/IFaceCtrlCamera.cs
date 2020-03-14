@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using FaceCtrl.Common.Models;
+using SpaceCtrl.Data.Models;
 
-namespace FaceCtrl.Common.Interfaces
+namespace SpaceCtrl.Data.Interfaces
 {
-    public interface IFaceCtrlCamera
+    public interface ISpaceCtrlCamera
     {
         Task SendNewObjectAsync(CameraObject @object);
         Task RemoveObjectAsync(Guid objectId);

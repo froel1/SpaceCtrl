@@ -2,7 +2,7 @@
 
 namespace SpaceCtrl.Data.Services
 {
-    public class FaceCtrlCameraSettings
+    public class SpaceCtrlCameraSettings
     {
         public string ServerAddress { get; set; } = default!;
 

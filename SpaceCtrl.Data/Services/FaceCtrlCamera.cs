@@ -12,10 +12,10 @@ using SpaceCtrl.Data.Models;
 
 namespace SpaceCtrl.Data.Services
 {
-    public class FaceCtrlCamera : IFaceCtrlCamera
+    public class SpaceCtrlCamera : ISpaceCtrlCamera
     {
         private readonly List<HttpClient> _ipCameras = new List<HttpClient>();
-        public FaceCtrlCamera(IConfiguration configuration)
+        public SpaceCtrlCamera(IConfiguration configuration)
         {
             InitCameras(configuration);
         }
@@ -47,8 +47,8 @@ namespace SpaceCtrl.Data.Services
 
         private void InitCameras(IConfiguration configuration)
         {
-            var cameraSettings = new FaceCtrlCameraSettings();
-            configuration.GetSection("faceCtrlCamera").Bind(cameraSettings);
+            var cameraSettings = new SpaceCtrlCameraSettings();
+            configuration.GetSection("SpaceCtrlCamera").Bind(cameraSettings);
             foreach (var ipCamera in cameraSettings.IpCameras)
             {
                 var baseUri = new Uri($"{cameraSettings.ServerAddress}:{ipCamera.Port}/");

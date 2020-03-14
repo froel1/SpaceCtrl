@@ -11,9 +11,9 @@ namespace SpaceCtrl.Api.Controllers
     [Route("Clients")]
     public class ClientController : ControllerBase
     {
-        private readonly FaceCtrlContext _dbContext;
+        private readonly SpaceCtrlContext _dbContext;
 
-        public ClientController(FaceCtrlContext dbContext)
+        public ClientController(SpaceCtrlContext dbContext)
         {
             _dbContext = dbContext;
         }

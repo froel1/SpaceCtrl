@@ -28,14 +28,14 @@ namespace SpaceCtrl.Front
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddScoped<ClientService>();
-            services.AddScoped<FaceCtrlContext>();
-            services.AddSingleton<IFaceCtrlCamera, FaceCtrlCamera>();
+            services.AddScoped<SpaceCtrlContext>();
+            services.AddSingleton<ISpaceCtrlCamera, SpaceCtrlCamera>();
 
             ConfigureDatabase(services);
 
             services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "FaceCtrl", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceCtrl", Version = "v1" });
             });
         }
 
@@ -85,7 +85,7 @@ namespace SpaceCtrl.Front
 
         private void ConfigureDatabase(IServiceCollection services)
         {
-            services.AddDbContext<FaceCtrlContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<SpaceCtrlContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
     }
 }
