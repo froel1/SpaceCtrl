@@ -21,7 +21,7 @@ namespace SpaceCtrl.Data.Services
         public async Task AddNewAsync(Client client, List<string> images)
         {
             _dbContext.Client.Add(client);
-            await _SpaceCtrl.SendNewObjectAsync(new CameraObject(client.Guid, images));
+            //            await _SpaceCtrl.SendNewObjectAsync(new CameraObject(client.Guid, images));
             await _dbContext.SaveChangesAsync();
         }
 

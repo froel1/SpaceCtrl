@@ -1,5 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SpaceCtrl.Api.Models.Camera;
+using SpaceCtrl.Api.Models.Client;
+using SpaceCtrl.Api.Models.Object;
 using SpaceCtrl.Data.Models.Database;
 using SpaceCtrl.Data.Services.Device;
 
@@ -19,14 +22,14 @@ namespace SpaceCtrl.Api.Controllers
         [HttpGet("get")]
         public async Task<ActionResult<Device>> Get(string key) => await _service.GetDevice(key);
 
-        [HttpPost]
-        public async Task<ActionResult> AddPerson([FromBody] PersonModel model)
+        /*[HttpPost]
+        public async Task<ActionResult> AddPerson([FromBody] ObjectModel model)
         {
             return Ok();
-        }
+        }*/
 
         [HttpPost]
-        public async Task<ActionResult> CreatePerson([FromBody] NewPersonModel model)
+        public async Task<ActionResult> CreatePerson([FromBody] NewClientModel model)
         {
             return Ok();
         }

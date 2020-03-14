@@ -1,4 +1,7 @@
-﻿namespace SpaceCtrl.Data.Models.Database
+﻿using System;
+using System.Collections.Generic;
+
+namespace SpaceCtrl.Data.Models.Database
 {
     public partial class Device
     {

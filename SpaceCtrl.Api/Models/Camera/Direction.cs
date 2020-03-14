@@ -1,4 +1,4 @@
-﻿namespace SpaceCtrl.Api.Controllers
+﻿namespace SpaceCtrl.Api.Models.Object
 {
     public enum Direction
     {

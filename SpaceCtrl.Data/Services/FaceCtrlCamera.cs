@@ -20,7 +20,7 @@ namespace SpaceCtrl.Data.Services
             InitCameras(configuration);
         }
 
-        public async Task SendNewObjectAsync(CameraObject @object)
+        /*public async Task SendNewObjectAsync(CameraObject @object)
         {
 
             var tasks = _ipCameras.Select(ipCamera => ipCamera.PostAsync(
@@ -29,7 +29,7 @@ namespace SpaceCtrl.Data.Services
             )).ToList();
 
             await Task.WhenAll(tasks);
-        }
+        }*/
         public async Task RemoveObjectAsync(Guid objectId)
         {
             var tasks = _ipCameras.Select(ipCamera =>
