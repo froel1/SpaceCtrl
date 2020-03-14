@@ -5,7 +5,8 @@ using SpaceCtrl.Api.Services;
 
 namespace SpaceCtrl.Api.Controllers
 {
-    [Microsoft.AspNetCore.Components.Route("v1/device")]
+    [ApiController]
+    [Route("v1/device")]
     public class DeviceController : BaseController
     {
         private readonly DeviceService _service;
@@ -16,6 +17,6 @@ namespace SpaceCtrl.Api.Controllers
         }
 
         [HttpPost("add")]
-        public async Task AddNewCamera(DeviceModel device) => await _service.AddAsync(device);
+        public async Task AddNewCameraAsync(DeviceModel device) => await _service.AddAsync(device);
     }
 }

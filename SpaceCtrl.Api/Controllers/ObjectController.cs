@@ -8,7 +8,8 @@ using SpaceCtrl.Api.Services;
 
 namespace SpaceCtrl.Api.Controllers
 {
-    [Microsoft.AspNetCore.Components.Route("v1/object")]
+    [ApiController]
+    [Route("v1/object")]
     public class ObjectController : BaseController
     {
         private readonly ObjectService _service;
@@ -18,11 +19,6 @@ namespace SpaceCtrl.Api.Controllers
             _service = service;
         }
 
-        [HttpGet("/")]
-        public ActionResult Index()
-        {
-            return Ok("works");
-        }
 
         [HttpPost("add")]
         public async Task AddNewObjectAsync(CameraObject @object) => await _service.AddAsync(@object);

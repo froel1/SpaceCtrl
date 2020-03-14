@@ -1,9 +1,12 @@
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using SpaceCtrl.Api.Models.Settings;
 using SpaceCtrl.Data.Models.Database;
 
@@ -21,11 +24,14 @@ namespace SpaceCtrl.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            var settings = new AppSettings();
-            Configuration.Bind(settings);
-            services.AddSingleton(settings);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+
             ConfigureDatabase(services);
+
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceCtrl Front", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,9 +42,13 @@ namespace SpaceCtrl.Api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             app.UseRouting();
 
             app.UseAuthorization();
+
+            ConfigureSwagger(app);
 
             app.UseEndpoints(endpoints =>
             {

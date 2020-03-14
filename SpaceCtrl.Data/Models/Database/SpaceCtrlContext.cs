@@ -103,7 +103,7 @@ namespace SpaceCtrl.Data.Models.Database
 
             modelBuilder.Entity<ObjectToClient>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.ObjectId, e.ObjectGuid });
 
                 entity.ToTable("ObjectToClient", "client");
 
