@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SpaceCtrl.Api.Models;
@@ -10,10 +12,12 @@ namespace SpaceCtrl.Api.Services
     public class DeviceService
     {
         private readonly SpaceCtrlContext _dbContext;
+        private readonly DeviceCache _cache;
 
-        public DeviceService(SpaceCtrlContext dbContext)
+        public DeviceService(SpaceCtrlContext dbContext, DeviceCache cache)
         {
             _dbContext = dbContext;
+            _cache = cache;
         }
 
         public async Task AddAsync(DeviceModel device)
@@ -28,26 +32,40 @@ namespace SpaceCtrl.Api.Services
             await _dbContext.SaveChangesAsync();
         }
 
-        /*public async Task<Models.Database.Device> GetDevice(string key)
+        public async Task<DeviceModel?> GetAsync(Guid key)
         {
-            var device = _dbContext.Device.FirstOrDefaultAsync(x => x.Key == key);
-            return await device;
+            if (_cache.TryGet(key, out var device))
+                return device;
+
+            device = await _dbContext.Device.Select(DeviceToModel()).FirstOrDefaultAsync(x => x.Key == key);
+
+            if (device != null)
+                _cache.Add(device.Key, device);
+
+            return device;
         }
 
-        public async Task<IEnumerable<Client>> GetGroupDetails(string ipCamKey)
+        public async Task<bool> ExistAsync(Guid key)
         {
-            var data = await _dbContext.Device
-                .Include(x => x.Target)
-                .ThenInclude(x => x.Client)
-                .FirstOrDefaultAsync(x => x.Key == ipCamKey);
+            if (_cache.Exist(key))
+                return true;
 
-            return data.Target.Client;
-        }*/
-        public async Task<IEnumerable<DeviceModel>> GetDevicesAsync() => await _dbContext.Device.Select(x => new DeviceModel
+            var device = await _dbContext.Device.Select(DeviceToModel()).FirstOrDefaultAsync(x => x.Key == key);
+            if (device == null)
+                return false;
+
+            _cache.Add(device.Key, device);
+            return true;
+        }
+
+        public async Task<IEnumerable<DeviceModel>> GetDevicesAsync() =>
+            await _dbContext.Device.Select(DeviceToModel()).ToListAsync();
+
+        private static Expression<Func<Device, DeviceModel>> DeviceToModel() => device => new DeviceModel
         {
-            Name = x.Name,
-            OrderIndex = x.OrderIndex,
-            Key = x.Key
-        }).ToListAsync();
+            Name = device.Name,
+            OrderIndex = device.OrderIndex,
+            Key = device.Key
+        };
     }
 }

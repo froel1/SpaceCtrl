@@ -7,6 +7,7 @@ using SpaceCtrl.Data.Models.Database;
 using SpaceCtrl.Data.Services;
 using SpaceCtrl.Front.Helpers;
 using SpaceCtrl.Front.Models.Client;
+using SpaceCtrl.Front.Services;
 
 namespace SpaceCtrl.Front.Controllers
 {

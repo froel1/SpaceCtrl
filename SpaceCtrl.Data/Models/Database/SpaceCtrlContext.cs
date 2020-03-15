@@ -71,8 +71,6 @@ namespace SpaceCtrl.Data.Models.Database
 
             modelBuilder.Entity<Image>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .IsUnicode(false);

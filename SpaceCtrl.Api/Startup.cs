@@ -63,6 +63,7 @@ namespace SpaceCtrl.Api
         {
             services.AddScoped<DeviceService>();
             services.AddScoped<ObjectService>();
+            services.AddSingleton<DeviceCache>();
         }
 
         private void ConfigureSwagger(IApplicationBuilder app)
