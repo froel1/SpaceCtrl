@@ -2,6 +2,8 @@
 {
     public class AppSettings
     {
-        public SwaggerOptions Swagger { get; set; } = default!;
+        public SwaggerSettings Swagger { get; set; } = default!;
+
+        public ImageSettings Image { get; set; } = default!;
     }
 }

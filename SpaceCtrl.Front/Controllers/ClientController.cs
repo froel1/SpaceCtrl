@@ -26,18 +26,10 @@ namespace SpaceCtrl.Front.Controllers
             NewClientModel client,
             IList<IFormFile> files)
         {
-            var newClient = new Client
-            {
-                Guid = Guid.NewGuid(),
-                FirstName = client.FirstName,
-                LastName = client.LastName,
-                CreateDate = DateTime.Now,
-                TargetId = 1,
-                IsActive = true
-            };
 
-            var base64Files = await files.ToBase64StringAsync();
-            await _service.AddNewAsync(newClient, base64Files);
+
+            //            var base64Files = await files.ToBase64StringAsync();
+            await _service.AddAsync(client, files);
 
             return Ok();
         }

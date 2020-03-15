@@ -31,6 +31,7 @@ namespace SpaceCtrl.Front
             services.AddScoped<ClientService>();
             services.AddScoped<SpaceCtrlContext>();
             services.AddSingleton<ISpaceCtrlCamera, SpaceCtrlCamera>();
+            services.Configure<AppSettings>(Configuration);
 
             ConfigureDatabase(services);
 
