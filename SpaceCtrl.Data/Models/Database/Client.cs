@@ -12,6 +12,9 @@ namespace SpaceCtrl.Data.Models.Database
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public bool IsActive { get; set; }
+        public int Type { get; set; }
+        public DateTime? SyncRequestedAt { get; set; }
+        public string SyncDetails { get; set; }
 
         public virtual TargetGroup Target { get; set; }
     }

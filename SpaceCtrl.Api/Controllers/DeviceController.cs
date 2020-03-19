@@ -23,6 +23,9 @@ namespace SpaceCtrl.Api.Controllers
         public async Task AddNewCameraAsync(DeviceModel device) => await _service.AddAsync(device);
 
         [HttpGet("list")]
-        public async Task<IEnumerable<DeviceModel>> GetDevicesAsync() => await _service.GetDevicesAsync();
+        public async Task<ActionResult<List<DeviceModel>>> GetDevicesAsync() => await _service.GetDevicesAsync();
+
+        [HttpGet("syncData")]
+        public async Task<ActionResult<List<SyncData>>> GetSyncDetailsAsync() => await _service.GetSyncDataAsync();
     }
 }

@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using SpaceCtrl.Data.Helpers;
 using SpaceCtrl.Data.Interfaces;
+using SpaceCtrl.Data.Models.ClientSync;
 using SpaceCtrl.Data.Models.Database;
 using SpaceCtrl.Front.Models.Client;
 using SpaceCtrl.Front.Models.Settings;
@@ -17,13 +19,11 @@ namespace SpaceCtrl.Front.Services
     public class ClientService
     {
         private readonly SpaceCtrlContext _dbContext;
-        private readonly ISpaceCtrlCamera _spaceCtrl;
         private readonly AppSettings _settings;
 
-        public ClientService(SpaceCtrlContext dbContext, ISpaceCtrlCamera spaceCtrl, IOptions<AppSettings> options)
+        public ClientService(SpaceCtrlContext dbContext, IOptions<AppSettings> options)
         {
             _dbContext = dbContext;
-            _spaceCtrl = spaceCtrl;
             _settings = options.Value;
         }
 
@@ -36,29 +36,69 @@ namespace SpaceCtrl.Front.Services
                 LastName = client.LastName,
                 CreateDate = DateTime.Now,
                 TargetId = 1,
-                IsActive = true
+                IsActive = true,
+                Type = (int)client.Type
             };
-            await SaveImagesAsync(newClient.Guid, files);
+
+            var (folderPath, imageNames) = await SaveImagesAsync(newClient.Guid, files);
+
+            newClient.SyncRequestedAt = DateTime.Now;
+            newClient.SyncDetails = CreateClientSyncDetails(newClient, folderPath, imageNames);
+
             _dbContext.Client.Add(newClient);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        private async Task SaveImagesAsync(Guid id, IEnumerable<IFormFile> files)
+        private static string CreateClientSyncDetails(Client client, string folderPath, List<string> images)
         {
-            var folderPath = Path.Combine(_settings.Image.BasePath, id.ToString());
+            var syncDetails = new ClientSyncDetails
+            {
+                SyncDetails = new SyncDetails
+                {
+                    Type = SyncOperationType.NewClient,
+                    ImagePath = folderPath,
+                    Images = images
+                }
+            };
+
+            return syncDetails.ToJson();
+        }
+
+        private async Task<(string, List<string>)> SaveImagesAsync(Guid id, IEnumerable<IFormFile> files)
+        {
+            var folderPath = CreateFolder(id);
+            var images = new List<string>();
+
+            try
+            {
+                var index = 0;
+                foreach (var (formFile, fileName) in files.Where(formFile => formFile.Length > 0).Select(ValidateImage()).ToList())
+                {
+                    var imageName = $"{++index}_{fileName}";
+                    images.Add(imageName);
+                    var imagePath = Path.Combine(folderPath, imageName);
+                    await using var fileStream = new FileStream(imagePath, FileMode.Create);
+                    await formFile.CopyToAsync(fileStream);
+                }
+            }
+            catch 
+            {
+                Directory.Delete(folderPath, true);
+                throw;
+            }
+
+            return (folderPath, images);
+        }
+
+        private string CreateFolder(Guid clientId)
+        {
+            var folderPath = Path.Combine(_settings.Image.BasePath, clientId.ToString());
             if (File.Exists(folderPath))
                 throw new InvalidOperationException($"directory already exist: {folderPath}");
 
             Directory.CreateDirectory(folderPath);
-
-            var index = 0;
-            foreach (var (formFile, fileName) in files.Where(formFile => formFile.Length > 0).Select(ValidateImage()).ToList())
-            {
-                var imagePath = Path.Combine(folderPath, $"{++index}_{fileName}");
-                await using var fileStream = new FileStream(imagePath, FileMode.Create);
-                await formFile.CopyToAsync(fileStream);
-            }
+            return folderPath;
         }
 
         private Func<IFormFile, (IFormFile, string)> ValidateImage() => file =>
@@ -78,8 +118,9 @@ namespace SpaceCtrl.Front.Services
         public async Task RemoveClientAsync(int clientId)
         {
             var client = await _dbContext.Client.FirstAsync(x => x.Id == clientId);
-            await _spaceCtrl.RemoveObjectAsync(client.Guid);
+
             client.IsActive = !client.IsActive;
+
             await _dbContext.SaveChangesAsync();
         }
     }

@@ -30,14 +30,14 @@ namespace SpaceCtrl.Api.Services
                 {
                     ObjectGuid = x
                 }).ToList(),
-                Image = await SaveImage(model.Image)
+                Image = await SaveImageAsync(model.Image)
             };
 
             await _dbContext.Object.AddAsync(@object);
             await _dbContext.SaveChangesAsync();
         }
 
-        private async Task<Image> SaveImage(CameraImage image) => await Task.FromResult(new Image
+        private static async Task<Image> SaveImageAsync(CameraImage image) => await Task.FromResult(new Image
         {
             Name = Guid.NewGuid().ToString(),
             Type = "png"
