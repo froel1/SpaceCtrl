@@ -21,16 +21,12 @@ namespace SpaceCtrl.Front.Controllers
             _service = service;
         }
 
-        [HttpPost("addNew")]
+        [HttpPost("add")]
         public async Task<ActionResult> AddNewClientAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]
             NewClientModel client,
             IList<IFormFile> files)
         {
-
-
-            //            var base64Files = await files.ToBase64StringAsync();
             await _service.AddAsync(client, files);
-
             return Ok();
         }
 
