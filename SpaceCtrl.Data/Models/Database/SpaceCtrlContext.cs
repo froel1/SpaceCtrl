@@ -47,6 +47,8 @@ namespace SpaceCtrl.Data.Models.Database
                     .IsRequired()
                     .HasMaxLength(100);
 
+                entity.Property(e => e.SyncDetails).IsRequired();
+
                 entity.Property(e => e.SyncRequestedAt).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Target)

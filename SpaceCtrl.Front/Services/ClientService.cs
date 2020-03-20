@@ -82,7 +82,7 @@ namespace SpaceCtrl.Front.Services
                     await formFile.CopyToAsync(fileStream);
                 }
             }
-            catch 
+            catch
             {
                 Directory.Delete(folderPath, true);
                 throw;
@@ -124,5 +124,4 @@ namespace SpaceCtrl.Front.Services
             await _dbContext.SaveChangesAsync();
         }
     }
-
 }
