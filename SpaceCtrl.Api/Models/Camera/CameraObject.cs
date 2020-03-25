@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SpaceCtrl.Api.Models.Camera
@@ -7,8 +8,17 @@ namespace SpaceCtrl.Api.Models.Camera
     {
         public Direction Direction { get; set; }
         public string Date { get; set; } = default!;
-        public Guid DeviceKey { get; set; }
-        public List<Guid> Objects { get; set; } = default!;
-        public CameraImage Image { get; set; }
+
+        public Dictionary<string, DataModel> Data { get; set; } = default!;
+    }
+
+    public class DataModel
+    {
+        public string Base64Image { get; set; } = default!;
+
+        public string ImageType { get; set; } = default!;
+        public string Date { get; set; } = default!;
+
+        public int PersonCount { get; set; }
     }
 }

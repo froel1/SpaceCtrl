@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SpaceCtrl.Data.Models.ClientSync
 {
-    public class ClientSyncDetails
+    public class PersonSyncDetails
     {
         public DateTime? LastSyncDate { get; set; }
 

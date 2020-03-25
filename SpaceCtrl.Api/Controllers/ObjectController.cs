@@ -19,9 +19,18 @@ namespace SpaceCtrl.Api.Controllers
             _service = service;
         }
 
-
         [HttpPost("add")]
-        public async Task AddNewObjectAsync(CameraObject @object) => await _service.AddAsync(@object);
+        public async Task AddNewObjectAsync(CameraObject @object)
+        {
+            foreach (var (key, model) in @object.Data)
+            {
+                var personId = Guid.Parse(key);
+                var frameDate = DateTime.Parse(model.Date);
+                var imageName = $"{Guid.NewGuid()}{model.ImageType}";
 
+                var bytes = Convert.FromBase64String(model.Base64Image);
+                System.IO.File.WriteAllBytes("C:\\Users\\Jimbo\\Desktop\\Docker Images\\test.jpg", bytes);
+            }
+        }
     }
 }

@@ -11,10 +11,10 @@ COPY ["SpaceCtrl.Data/SpaceCtrl.Data.csproj", "SpaceCtrl.Data/"]
 RUN dotnet restore "SpaceCtrl.Front/SpaceCtrl.Front.csproj"
 COPY . .
 WORKDIR "/src/SpaceCtrl.Front"
-RUN dotnet build "SpaceCtrl.Front.csproj" -c Development -o /app/build
+RUN dotnet build "SpaceCtrl.Front.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "SpaceCtrl.Front.csproj" -c Development -o /app/publish
+RUN dotnet publish "SpaceCtrl.Front.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app

@@ -29,8 +29,7 @@ namespace SpaceCtrl.Api.Services
             var newDevice = new Device
             {
                 Key = device.Key,
-                Name = device.Name ?? string.Empty,
-                TargetId = device.TargetId
+                Name = device.Name ?? string.Empty
             };
             await _dbContext.Device.AddAsync(newDevice);
             await _dbContext.SaveChangesAsync();
@@ -98,28 +97,28 @@ namespace SpaceCtrl.Api.Services
             return cameraImages;
         }
 
-        private async Task<Dictionary<Guid, ClientSyncDetails>> GetSyncDetailsAsync()
+        private async Task<Dictionary<Guid, PersonSyncDetails>> GetSyncDetailsAsync()
         {
-            var clients = await _dbContext.Client.Where(x => x.SyncRequestedAt.HasValue)
+            var persons = await _dbContext.Person.Where(x => x.SyncRequestedAt.HasValue)
                 .OrderByDescending(x => x.SyncRequestedAt)
                 .AsTracking().Take(5).ToListAsync();
 
-            var syncDetails = new Dictionary<Guid, ClientSyncDetails>();
+            var syncDetails = new Dictionary<Guid, PersonSyncDetails>();
 
-            foreach (var client in clients)
+            foreach (var person in persons)
             {
-                client.SyncRequestedAt = null;
-                var syncDetail = client.SyncDetails.DeserializeToObject<ClientSyncDetails>();
+                person.SyncRequestedAt = null;
+                var syncDetail = person.SyncDetails.DeserializeToObject<PersonSyncDetails>();
                 if (syncDetail is null)
                     continue;//TODO:cot ??
-                syncDetails.Add(client.Guid, syncDetail);
-                client.SyncDetails = UpdateSyncDetails(syncDetail);
+                syncDetails.Add(person.Key, syncDetail);
+                person.SyncDetails = UpdateSyncDetails(syncDetail);
             }
 
             return syncDetails;
         }
 
-        private static string UpdateSyncDetails(ClientSyncDetails syncDetails)
+        private static string UpdateSyncDetails(PersonSyncDetails syncDetails)
         {
             syncDetails.LastSyncDate = DateTime.Now;
             syncDetails.SyncHistory ??= new List<SyncDetails>();
@@ -135,7 +134,6 @@ namespace SpaceCtrl.Api.Services
         private static Expression<Func<Device, DeviceModel>> DeviceToModel() => device => new DeviceModel
         {
             Name = device.Name,
-            OrderIndex = device.OrderIndex,
             Key = device.Key
         };
     }

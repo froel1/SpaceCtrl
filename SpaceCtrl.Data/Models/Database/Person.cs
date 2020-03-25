@@ -3,19 +3,15 @@ using System.Collections.Generic;
 
 namespace SpaceCtrl.Data.Models.Database
 {
-    public partial class Client
+    public partial class Person
     {
         public int Id { get; set; }
-        public Guid Guid { get; set; }
+        public Guid Key { get; set; }
         public DateTime CreateDate { get; set; }
-        public int TargetId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public bool IsActive { get; set; }
-        public int Type { get; set; }
         public DateTime? SyncRequestedAt { get; set; }
         public string SyncDetails { get; set; }
-
-        public virtual TargetGroup Target { get; set; }
     }
 }

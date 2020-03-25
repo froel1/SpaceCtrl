@@ -11,22 +11,22 @@ using SpaceCtrl.Front.Services;
 
 namespace SpaceCtrl.Front.Controllers
 {
-    [Route("v1/client")]
+    [Route("v1/person")]
     public class ClientController : Controller
     {
-        private readonly ClientService _service;
+        private readonly PersonService _service;
 
-        public ClientController(ClientService service)
+        public ClientController(PersonService service)
         {
             _service = service;
         }
 
         [HttpPost("add")]
         public async Task<ActionResult> AddNewClientAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]
-            NewClientModel client,
+            NewPersonModel person,
             IList<IFormFile> files)
         {
-            await _service.AddAsync(client, files);
+            await _service.AddAsync(person, files);
             return Ok();
         }
 

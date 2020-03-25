@@ -11,7 +11,7 @@ namespace SpaceCtrl.Api.Controllers
     [ApiController]
     public abstract class BaseController : ControllerBase
     {
-        [DeviceKey, Required]
+        // [DeviceKey, Required]
         [FromHeader(Name = "DeviceKey")]
         public Guid DeviceKey { get; set; }
     }

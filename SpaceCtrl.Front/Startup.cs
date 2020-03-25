@@ -28,7 +28,7 @@ namespace SpaceCtrl.Front
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddScoped<ClientService>();
+            services.AddScoped<PersonService>();
             services.AddScoped<SpaceCtrlContext>();
             services.AddSingleton<ISpaceCtrlCamera, SpaceCtrlCamera>();
             services.Configure<AppSettings>(Configuration);

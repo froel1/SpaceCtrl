@@ -11,12 +11,11 @@ namespace SpaceCtrl.Data.Models.Database
         }
 
         public int Id { get; set; }
-        public Guid Key { get; set; }
         public string Name { get; set; }
-        public int? OrderIndex { get; set; }
-        public int TargetId { get; set; }
+        public Guid Key { get; set; }
+        public DateTime CreateDate { get; set; }
+        public bool IsActive { get; set; }
 
-        public virtual TargetGroup Target { get; set; }
         public virtual ICollection<Object> Object { get; set; }
     }
 }

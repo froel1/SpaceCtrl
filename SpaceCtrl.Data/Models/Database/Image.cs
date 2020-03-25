@@ -10,9 +10,9 @@ namespace SpaceCtrl.Data.Models.Database
             Object = new HashSet<Object>();
         }
 
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public Guid Id { get; set; }
         public string Type { get; set; }
+        public DateTime CreateDate { get; set; }
 
         public virtual ICollection<Object> Object { get; set; }
     }

@@ -16,43 +16,41 @@ using SpaceCtrl.Front.Models.Settings;
 
 namespace SpaceCtrl.Front.Services
 {
-    public class ClientService
+    public class PersonService
     {
         private readonly SpaceCtrlContext _dbContext;
         private readonly AppSettings _settings;
 
-        public ClientService(SpaceCtrlContext dbContext, IOptions<AppSettings> options)
+        public PersonService(SpaceCtrlContext dbContext, IOptions<AppSettings> options)
         {
             _dbContext = dbContext;
             _settings = options.Value;
         }
 
-        public async Task AddAsync(NewClientModel client, IList<IFormFile> files)
+        public async Task AddAsync(NewPersonModel person, IList<IFormFile> files)
         {
-            var newClient = new Client
+            var newPerson = new Person
             {
-                Guid = Guid.NewGuid(),
-                FirstName = client.FirstName,
-                LastName = client.LastName,
+                Key = Guid.NewGuid(),
+                FirstName = person.FirstName,
+                LastName = person.LastName,
                 CreateDate = DateTime.Now,
-                TargetId = 1,
-                IsActive = true,
-                Type = (int)client.Type
+                IsActive = true
             };
 
-            var (folderPath, imageNames) = await SaveImagesAsync(newClient.Guid, files);
+            var (folderPath, imageNames) = await SaveImagesAsync(newPerson.Key, files);
 
-            newClient.SyncRequestedAt = DateTime.Now;
-            newClient.SyncDetails = CreateClientSyncDetails(newClient, folderPath, imageNames);
+            newPerson.SyncRequestedAt = DateTime.Now;
+            newPerson.SyncDetails = CreatePersonSyncDetails(newPerson, folderPath, imageNames);
 
-            _dbContext.Client.Add(newClient);
+            _dbContext.Person.Add(newPerson);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        private static string CreateClientSyncDetails(Client client, string folderPath, List<string> images)
+        private static string CreatePersonSyncDetails(Person client, string folderPath, List<string> images)
         {
-            var syncDetails = new ClientSyncDetails
+            var syncDetails = new PersonSyncDetails
             {
                 SyncDetails = new SyncDetails
                 {
@@ -91,9 +89,9 @@ namespace SpaceCtrl.Front.Services
             return (folderPath, images);
         }
 
-        private string CreateFolder(Guid clientId)
+        private string CreateFolder(Guid personKey)
         {
-            var folderPath = Path.Combine(_settings.Image.BasePath, clientId.ToString());
+            var folderPath = Path.Combine(_settings.Image.BasePath, personKey.ToString());
             if (File.Exists(folderPath))
                 throw new InvalidOperationException($"directory already exist: {folderPath}");
 
@@ -115,11 +113,11 @@ namespace SpaceCtrl.Front.Services
             return (file, fileName);
         };
 
-        public async Task RemoveClientAsync(int clientId)
+        public async Task RemoveClientAsync(int personId)
         {
-            var client = await _dbContext.Client.FirstAsync(x => x.Id == clientId);
+            var person = await _dbContext.Person.FirstAsync(x => x.Id == personId);
 
-            client.IsActive = !client.IsActive;
+            person.IsActive = !person.IsActive;
 
             await _dbContext.SaveChangesAsync();
         }
