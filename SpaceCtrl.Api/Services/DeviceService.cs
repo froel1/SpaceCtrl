@@ -134,7 +134,8 @@ namespace SpaceCtrl.Api.Services
         private static Expression<Func<Device, DeviceModel>> DeviceToModel() => device => new DeviceModel
         {
             Name = device.Name,
-            Key = device.Key
+            Key = device.Key,
+            DeviceId = device.Id
         };
     }
 }

@@ -8,6 +8,8 @@ namespace SpaceCtrl.Api.Models
         [Required]
         public Guid Key { get; set; }
 
+        public int DeviceId { get; set; }
+
         public string? Name { get; set; }
         public int? OrderIndex { get; set; }
 
