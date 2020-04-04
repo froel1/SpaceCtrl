@@ -26,6 +26,7 @@ namespace SpaceCtrl.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             ConfigureDatabase(services);
 
@@ -68,17 +69,17 @@ namespace SpaceCtrl.Api
 
         private void ConfigureSwagger(IApplicationBuilder app)
         {
-            var settings = new AppSettings();
-            Configuration.Bind(settings);
+            var swagger = new SwaggerOptions();
+            Configuration.GetSection("Swagger").Bind(swagger);
 
             app.UseSwagger(options =>
             {
-                options.RouteTemplate = settings.Swagger.JsonRoute;
+                options.RouteTemplate = swagger.JsonRoute;
             });
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint(settings.Swagger.UiEndpoint, settings.Swagger.Description);
+                options.SwaggerEndpoint(swagger.UiEndpoint, swagger.Description);
             });
         }
 

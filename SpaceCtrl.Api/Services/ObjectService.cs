@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SpaceCtrl.Api.Models.Camera;
@@ -25,7 +26,11 @@ namespace SpaceCtrl.Api.Services
         public async Task SaveObjectAsync(CameraObject @object, Guid deviceKey)
         {
             var objects = new List<Data.Models.Database.Object>();
-            var deviceId = _device.GetAsync(deviceKey).Id;
+            var deviceId = (await _device.GetAsync(deviceKey))!.DeviceId;
+
+            var data = @object.Data
+                .GroupBy(x => x.Key, y => y.Value)
+                .ToDictionary(x => x.Key, x => x.FirstOrDefault());
 
             foreach (var (key, model) in @object.Data)
             {
