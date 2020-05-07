@@ -8,7 +8,7 @@ namespace SpaceCtrl.Api.Models.Camera
     {
         public Direction Direction { get; set; }
         public string Date { get; set; } = default!;
-
+        public int CameraId { get; set; }
         public Dictionary<string, DataModel> Data { get; set; } = default!;
     }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SpaceCtrl.Data.Models.Database
+namespace SpaceCtrl.Data.Database.DbObjects
 {
-    public partial class Image
+    public partial class Frame
     {
-        public Image()
+        public Frame()
         {
             Object = new HashSet<Object>();
         }

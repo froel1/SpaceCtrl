@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using SpaceCtrl.Api.Attributes;
 using SpaceCtrl.Api.Models.Camera;
 using SpaceCtrl.Api.Services;
@@ -27,14 +28,6 @@ namespace SpaceCtrl.Api.Controllers
         {
             await _service.SaveObjectAsync(@object, DeviceKey);
             return Ok();
-        }
-
-        [HttpGet("test")]
-        [DeviceKey]
-        public async Task<ActionResult> GetDevice()
-        {
-            var model = await _deviceService.GetAsync(DeviceKey);
-            return Ok(model);
         }
     }
 }

@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SpaceCtrl.Data.Database.DbObjects;
 using SpaceCtrl.Data.Interfaces;
-using SpaceCtrl.Data.Models.Database;
 using SpaceCtrl.Data.Services;
 using SpaceCtrl.Front.Models.Settings;
 using SpaceCtrl.Front.Services;
@@ -28,7 +29,8 @@ namespace SpaceCtrl.Front
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddScoped<PersonService>();
+            services.AddScoped<ClientService>();
+            services.AddScoped<RecordService>();
             services.AddScoped<SpaceCtrlContext>();
             services.AddSingleton<ISpaceCtrlCamera, SpaceCtrlCamera>();
             services.Configure<AppSettings>(Configuration);
@@ -39,6 +41,13 @@ namespace SpaceCtrl.Front
             {
                 opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceCtrl Front", Version = "v1" });
             });
+
+            services.AddCors(o => o.AddPolicy("DefaultPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,11 +62,17 @@ namespace SpaceCtrl.Front
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Configuration["Image:BasePath"]),
+                RequestPath = Configuration["StaticContentWebPath"]
+            });
 
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors("DefaultPolicy");
 
             ConfigureSwagger(app);
 

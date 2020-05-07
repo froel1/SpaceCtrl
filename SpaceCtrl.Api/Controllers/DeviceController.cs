@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SpaceCtrl.Api.Models;
 using SpaceCtrl.Api.Services;
-using SpaceCtrl.Data.Models.Database;
 
 namespace SpaceCtrl.Api.Controllers
 {

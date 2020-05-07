@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.Extensions.Options;
+using Serilog;
 using SpaceCtrl.Api.Models.Camera;
 using SpaceCtrl.Api.Models.Settings;
-using SpaceCtrl.Data.Models.Database;
+using SpaceCtrl.Data.Database.DbObjects;
 
 namespace SpaceCtrl.Api.Services
 {
@@ -25,13 +29,12 @@ namespace SpaceCtrl.Api.Services
 
         public async Task SaveObjectAsync(CameraObject @object, Guid deviceKey)
         {
-            var objects = new List<Data.Models.Database.Object>();
+            var objects = new List<Data.Database.DbObjects.Object>();
             var deviceId = (await _device.GetAsync(deviceKey))!.DeviceId;
 
-            var data = @object.Data
-                .GroupBy(x => x.Key, y => y.Value)
-                .ToDictionary(x => x.Key, x => x.FirstOrDefault());
-
+            var timer = new Stopwatch();
+            timer.Start();
+            Log.Information("Group date {date}", @object.Date);
             foreach (var (key, model) in @object.Data)
             {
                 /*Image image;
@@ -44,25 +47,29 @@ namespace SpaceCtrl.Api.Services
                     Console.WriteLine(e);
                     continue;
                 }*/
+                Log.Information("Saving Object {objectId}, with count {count}", key, model.PersonCount);
 
-                var obj = new Data.Models.Database.Object
+                objects.Add(new Data.Database.DbObjects.Object
                 {
                     CreateDate = DateTime.Now,
                     DeviceId = deviceId,
+                    ChannelId = @object.CameraId,
                     Direction = (int)@object.Direction,
                     PersonKey = Guid.Parse(key),
-                    ImageDate = DateTime.Parse(@object.Date),
-                    Image = await SaveImageAsync(model)
-                };
-
-                objects.Add(obj);
+                    FrameDate = DateTime.Parse(@object.Date),
+                    Frame = await SaveImageAsync(model),
+                    PersonCount = model.PersonCount
+                });
             }
+
+            timer.Stop();
+            Log.Debug($"Saved in {timer.Elapsed}\n\n");
 
             await _dbContext.Object.AddRangeAsync(objects);
             await _dbContext.SaveChangesAsync();
         }
 
-        private async Task<Image> SaveImageAsync(DataModel model)
+        private async Task<Frame> SaveImageAsync(DataModel model)
         {
             var id = Guid.NewGuid();
             var bytes = Convert.FromBase64String(model.Base64Image);
@@ -70,7 +77,7 @@ namespace SpaceCtrl.Api.Services
 
             await File.WriteAllBytesAsync(path, bytes);
 
-            return new Image()
+            return new Frame
             {
                 Id = id,
                 Type = model.ImageType,

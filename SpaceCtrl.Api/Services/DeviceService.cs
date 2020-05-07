@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SpaceCtrl.Api.Models;
 using SpaceCtrl.Api.Models.Camera;
+using SpaceCtrl.Data.Database.DbObjects;
 using SpaceCtrl.Data.Helpers;
 using SpaceCtrl.Data.Models.ClientSync;
-using SpaceCtrl.Data.Models.Database;
 
 namespace SpaceCtrl.Api.Services
 {
@@ -66,13 +66,13 @@ namespace SpaceCtrl.Api.Services
             var syncDetails = await GetSyncDetailsAsync();
             var data = new List<SyncData>();
 
-            foreach (var (clientId, clientSyncDetails) in syncDetails)
+            foreach (var (person, clientSyncDetails) in syncDetails)
             {
-                List<CameraImage> images = null;
+                List<CameraImage>? images = null;
                 if (clientSyncDetails.SyncDetails.Type == SyncOperationType.NewClient)
                     images = await ReadImagesAsync(clientSyncDetails!.SyncDetails);
 
-                data.Add(new SyncData(clientId, images, clientSyncDetails!.SyncDetails!.Type));
+                data.Add(new SyncData(person.Key, $"{person.FirstName}", images, clientSyncDetails!.SyncDetails!.Type));
             }
 
             await _dbContext.SaveChangesAsync();
@@ -97,13 +97,13 @@ namespace SpaceCtrl.Api.Services
             return cameraImages;
         }
 
-        private async Task<Dictionary<Guid, PersonSyncDetails>> GetSyncDetailsAsync()
+        private async Task<Dictionary<Person, PersonSyncDetails>> GetSyncDetailsAsync()
         {
             var persons = await _dbContext.Person.Where(x => x.SyncRequestedAt.HasValue)
                 .OrderByDescending(x => x.SyncRequestedAt)
                 .AsTracking().Take(5).ToListAsync();
 
-            var syncDetails = new Dictionary<Guid, PersonSyncDetails>();
+            var syncDetails = new Dictionary<Person, PersonSyncDetails>();
 
             foreach (var person in persons)
             {
@@ -111,7 +111,7 @@ namespace SpaceCtrl.Api.Services
                 var syncDetail = person.SyncDetails.DeserializeToObject<PersonSyncDetails>();
                 if (syncDetail is null)
                     continue;//TODO:cot ??
-                syncDetails.Add(person.Key, syncDetail);
+                syncDetails.Add(person, syncDetail);
                 person.SyncDetails = UpdateSyncDetails(syncDetail);
             }
 

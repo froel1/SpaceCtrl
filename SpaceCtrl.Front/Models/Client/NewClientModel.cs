@@ -2,14 +2,15 @@
 
 namespace SpaceCtrl.Front.Models.Client
 {
-    public class NewPersonModel 
+    public class NewClientModel
     {
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string FirstName { get; set; } = default!;
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string LastName { get; set; } = default!;
 
+        [Required]
         public ClientType Type { get; set; }
     }
 

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using SpaceCtrl.Data.Models.Database;
+using SpaceCtrl.Data.Database.DbObjects;
 
 namespace SpaceCtrl.ImageProcessing
 {

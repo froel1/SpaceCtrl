@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext "Server=157.230.127.53;Database=SpaceCtrl;User Id=sa;Password=kEEp4izontal;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Database/DbObjects -Force
