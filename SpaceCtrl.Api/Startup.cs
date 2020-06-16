@@ -30,11 +30,14 @@ namespace SpaceCtrl.Api
             {
                 options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             });
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.Configure<AppSettings>(Configuration);
 
             ConfigureDatabase(services);
 
-            AddServices(services);
+            services.AddScoped<DeviceService>();
+            services.AddScoped<ObjectService>();
+            services.AddSingleton<DeviceCache>();
 
             services.AddSwaggerGen(opt =>
             {
@@ -67,13 +70,6 @@ namespace SpaceCtrl.Api
             {
                 endpoints.MapControllers();
             });
-        }
-
-        private static void AddServices(IServiceCollection services)
-        {
-            services.AddScoped<DeviceService>();
-            services.AddScoped<ObjectService>();
-            services.AddSingleton<DeviceCache>();
         }
 
         private void ConfigureSwagger(IApplicationBuilder app)

@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using SpaceCtrl.Data.Database.DbObjects;
 using SpaceCtrl.Front.Extensions;
+using SpaceCtrl.Front.Models.Client.Groups;
 using SpaceCtrl.Front.Models.Common;
 using SpaceCtrl.Front.Models.Record;
 using SpaceCtrl.Front.Models.Settings;
-using Object = SpaceCtrl.Data.Database.DbObjects.Object;
 
 namespace SpaceCtrl.Front.Services
 {
@@ -25,32 +25,6 @@ namespace SpaceCtrl.Front.Services
             _dbContext = dbContext;
             _settings = options.Value;
         }
-
-        /*public List<Guid> Test(RecordFilterModel filter)
-        {
-            var date = (filter.Date ?? DateTime.Now).Date.AddDays(-1);
-
-            var personKeys = (
-                from obj in _dbContext.Object
-                join per in _dbContext.Person on obj.PersonKey equals per.Key
-                where obj.CreateDate >= date && obj.CreateDate <= date.AddDays(1)
-                orderby obj.FrameDate
-                group obj by obj.PersonKey
-                into grp
-                select grp.Key);
-
-            var test = (from per in _dbContext.Person
-                        join obj in _dbContext.Object on per.Key equals obj.PersonKey into objects
-                        from finalObj in objects.Where(x => x.CreateDate >= date && x.CreateDate <= date).OrderBy(x => x.FrameDate).DefaultIfEmpty()
-                        where personKeys.Contains(per.Key)
-                        select new
-                        {
-                            person = per,
-                            obj = finalObj
-                        });
-
-            return personKeys;
-        }*/
 
         public async Task<PagedList<RecordModel>> GetRecordsAsync(PaginationWithFilter<RecordFilterModel> filter)
         {
@@ -83,7 +57,7 @@ namespace SpaceCtrl.Front.Services
                 new RecordModel(
                     x.First().Per,
                     x.OrderBy(t => t.Obj.FrameDate).First().Obj,
-                    _settings.Image.BasePath)
+                    _settings.Image)
             ).OrderBy(x => x.CreateDate).ToPagedList(filter).ToList();
 
             return new PagedList<RecordModel>(count, data);
@@ -126,82 +100,5 @@ namespace SpaceCtrl.Front.Services
 
             return result;
         }
-    }
-
-    [Flags]
-    public enum WorkDays
-    {
-        None = 0,
-        Monday = 1,
-        Tuesday = 2,
-        Wednesday = 3,
-        Thursday = 4,
-        Friday = 5,
-        Saturday = 6,
-        Sunday = 7
-    }
-
-    public class PersonGroupModel
-    {
-        public int? Id { get; set; }
-
-        public string Name { get; set; }
-
-        public List<RecordModel> Records { get; set; }
-
-        public PersonGroupModel(int? id, string name, RecordModel model)
-        {
-            Id = id;
-            Name = name;
-            Records = new List<RecordModel> { model };
-        }
-
-        public PersonGroupModel(PersonGroup groupModel)
-        {
-            Id = groupModel.Id;
-            Name = groupModel.Name;
-            Records = new List<RecordModel>();
-        }
-    }
-
-    public class RecordModel
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string GroupName { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public string? FramePath { get; set; }
-
-        public RecordModel(Person person, DateTime? date)
-        {
-            Id = person.Id;
-            FirstName = person.FirstName;
-            LastName = person.LastName;
-            GroupName = person.Group.Name;
-            CreateDate = date;
-        }
-
-        public RecordModel(Person person, Object @object, string basePath)
-        {
-            Id = person.Id;
-            FirstName = person.FirstName;
-            LastName = person.LastName;
-            GroupName = person.Group.Name;
-            CreateDate = @object.FrameDate;
-            FramePath = @object.Frame.GetPath(basePath);
-        }
-
-        /*
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return (obj is RecordModel model) && Id == model.Id && CreateDate.AddMinutes(2) >= model.CreateDate;
-        }
-
-        public override int GetHashCode() => HashCode.Combine(Id, FirstName, LastName, CreateDate);
-        */
     }
 }

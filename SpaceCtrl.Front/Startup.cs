@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using SpaceCtrl.Data.Database.DbObjects;
 using SpaceCtrl.Data.Interfaces;
 using SpaceCtrl.Data.Services;
+using SpaceCtrl.Front.BackgroundServices;
 using SpaceCtrl.Front.Models.Settings;
 using SpaceCtrl.Front.Services;
 
@@ -32,7 +33,9 @@ namespace SpaceCtrl.Front
             services.AddScoped<ClientService>();
             services.AddScoped<RecordService>();
             services.AddScoped<SpaceCtrlContext>();
+            services.AddScoped<GroupService>();
             services.AddSingleton<ISpaceCtrlCamera, SpaceCtrlCamera>();
+            // services.AddHostedService<GroupSchedulerHostedService>();
             services.Configure<AppSettings>(Configuration);
 
             ConfigureDatabase(services);
@@ -65,7 +68,7 @@ namespace SpaceCtrl.Front
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(Configuration["Image:BasePath"]),
-                RequestPath = Configuration["StaticContentWebPath"]
+                RequestPath = Configuration["Image:StaticContentWebPath"]
             });
 
             app.UseRouting();

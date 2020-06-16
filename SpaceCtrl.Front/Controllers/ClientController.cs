@@ -19,7 +19,7 @@ namespace SpaceCtrl.Front.Controllers
         public ClientController(ClientService service) => _service = service;
 
         [HttpGet]
-        public async Task<ActionResult<ClientDetails>> GetClientAsync(int id) => await _service.GetAsync(id);
+        public async Task<ActionResult<ClientModel>> GetClientAsync(int id) => await _service.GetAsync(id);
 
         [HttpGet("list")]
         public async Task<ActionResult<PagedList<ClientDetails>>> GetClientsAsync([FromQuery] PaginationWithFilter<ClientFilterModel> model) =>
@@ -42,12 +42,18 @@ namespace SpaceCtrl.Front.Controllers
         [HttpGet("groups")]
         public async Task<List<Dropdown>> GetGroupsAsync() => await _service.GetGroupsAsync();
 
-        [HttpPut("add")]
-        public async Task<ActionResult> AddNewClientAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]
-            NewClientModel client,
-            IList<IFormFile> files)
+        [HttpGet("groupMembers")]
+        public async Task<List<Dropdown>> GetGroupMembersAsync(int clientId) => await _service.GetGroupMembersAsync(clientId);
+
+        [HttpPost("add")]
+        public async Task<ActionResult<int>> AddNewClientAsync([ModelBinder(BinderType = typeof(JsonModelBinder))]
+            ClientModel client,
+            IList<IFormFile> files) => await _service.AddAsync(client, files);
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteClientAsync(int id)
         {
-            await _service.AddAsync(client, files);
+            await _service.DeleteClientAsync(id);
             return Ok();
         }
 

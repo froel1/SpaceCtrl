@@ -5,9 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Serilog;
 using SpaceCtrl.Api.Models;
 using SpaceCtrl.Api.Models.Camera;
+using SpaceCtrl.Api.Models.Settings;
 using SpaceCtrl.Data.Database.DbObjects;
+using SpaceCtrl.Data.Extensions;
 using SpaceCtrl.Data.Helpers;
 using SpaceCtrl.Data.Models.ClientSync;
 
@@ -17,11 +21,13 @@ namespace SpaceCtrl.Api.Services
     {
         private readonly SpaceCtrlContext _dbContext;
         private readonly DeviceCache _cache;
+        private readonly AppSettings _settings;
 
-        public DeviceService(SpaceCtrlContext dbContext, DeviceCache cache)
+        public DeviceService(SpaceCtrlContext dbContext, DeviceCache cache, IOptions<AppSettings> settings)
         {
             _dbContext = dbContext;
             _cache = cache;
+            _settings = settings.Value;
         }
 
         public async Task AddAsync(DeviceModel device)
@@ -68,29 +74,40 @@ namespace SpaceCtrl.Api.Services
 
             foreach (var (person, clientSyncDetails) in syncDetails)
             {
-                List<CameraImage>? images = null;
-                if (clientSyncDetails.SyncDetails.Type == SyncOperationType.NewClient)
-                    images = await ReadImagesAsync(clientSyncDetails!.SyncDetails);
+                if (clientSyncDetails?.SyncDetails?.Type is null)
+                {
+                    Log.Error("Something went wrong new sync request without details, client {id}", person.Id);
+                    continue;
+                }
 
-                data.Add(new SyncData(person.Key, $"{person.FirstName}", images, clientSyncDetails!.SyncDetails!.Type));
+                var images = clientSyncDetails.SyncDetails.Type switch
+                {
+                    SyncOperationType.NewClient => await ReadImagesAsync(person),
+                    SyncOperationType.UpdateClient => await ReadImagesAsync(person),
+                    SyncOperationType.DeleteClient => null,
+                    _ => null
+                };
+
+                data.Add(new SyncData(person.Key, $"{person.FirstName} {person.LastName}", images, clientSyncDetails.SyncDetails.Type));
             }
 
             await _dbContext.SaveChangesAsync();
             return data;
         }
 
-        private static async Task<List<CameraImage>> ReadImagesAsync(SyncDetails syncDetails)
+        private async Task<List<CameraImage>> ReadImagesAsync(Person person)
         {
             var cameraImages = new List<CameraImage>();
 
-            foreach (var imageName in syncDetails.Images)
+            foreach (var image in person.PersonImages)
             {
-                var path = Path.Combine(syncDetails.ImagePath, imageName);
+                var path = image.Frame.GetPath(_settings.Image, ImageType.User);
                 var imageData = await File.ReadAllBytesAsync(path);
+
                 cameraImages.Add(new CameraImage
                 {
                     Base64Data = Convert.ToBase64String(imageData),
-                    Name = imageName
+                    Name = $"{image.Frame.Id}{image.Frame.Type}"
                 });
             }
 
@@ -99,7 +116,9 @@ namespace SpaceCtrl.Api.Services
 
         private async Task<Dictionary<Person, PersonSyncDetails>> GetSyncDetailsAsync()
         {
-            var persons = await _dbContext.Person.Where(x => x.SyncRequestedAt.HasValue)
+            var persons = await _dbContext.Person
+                .Include(x => x.PersonImages).ThenInclude(x => x.Frame)
+                .Where(x => x.SyncRequestedAt.HasValue)
                 .OrderByDescending(x => x.SyncRequestedAt)
                 .AsTracking().Take(5).ToListAsync();
 
@@ -109,8 +128,13 @@ namespace SpaceCtrl.Api.Services
             {
                 person.SyncRequestedAt = null;
                 var syncDetail = person.SyncDetails.DeserializeToObject<PersonSyncDetails>();
+
                 if (syncDetail is null)
-                    continue;//TODO:cot ??
+                {
+                    Log.Error("Something went wrong new sync request without details, client {id}", person.Id);
+                    continue;
+                }
+
                 syncDetails.Add(person, syncDetail);
                 person.SyncDetails = UpdateSyncDetails(syncDetail);
             }

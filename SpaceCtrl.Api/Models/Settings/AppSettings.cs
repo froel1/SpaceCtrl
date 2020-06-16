@@ -1,7 +1,9 @@
-﻿namespace SpaceCtrl.Api.Models.Settings
+﻿using SpaceCtrl.Data.Extensions;
+
+namespace SpaceCtrl.Api.Models.Settings
 {
     public class AppSettings
     {
-        public string ImagePath { get; set; } = default!;
+        public ImageSettings Image { get; set; } = default!;
     }
 }

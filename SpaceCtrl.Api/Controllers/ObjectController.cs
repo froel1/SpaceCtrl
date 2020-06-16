@@ -15,12 +15,10 @@ namespace SpaceCtrl.Api.Controllers
     public class ObjectController : BaseController
     {
         private readonly ObjectService _service;
-        private readonly DeviceService _deviceService;
 
-        public ObjectController(ObjectService service, DeviceService deviceService)
+        public ObjectController(ObjectService service)
         {
             _service = service;
-            _deviceService = deviceService;
         }
 
         [HttpPost("add")]

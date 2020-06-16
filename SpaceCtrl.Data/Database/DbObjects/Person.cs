@@ -5,6 +5,12 @@ namespace SpaceCtrl.Data.Database.DbObjects
 {
     public partial class Person
     {
+        public Person()
+        {
+            GroupEntry = new HashSet<GroupEntry>();
+            PersonImages = new HashSet<PersonImages>();
+        }
+
         public int Id { get; set; }
         public Guid Key { get; set; }
         public string FirstName { get; set; }
@@ -16,5 +22,7 @@ namespace SpaceCtrl.Data.Database.DbObjects
         public DateTime CreateDate { get; set; }
 
         public virtual PersonGroup Group { get; set; }
+        public virtual ICollection<GroupEntry> GroupEntry { get; set; }
+        public virtual ICollection<PersonImages> PersonImages { get; set; }
     }
 }

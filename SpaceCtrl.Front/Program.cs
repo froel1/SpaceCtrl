@@ -1,4 +1,6 @@
+using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace SpaceCtrl.Front
@@ -14,8 +16,13 @@ namespace SpaceCtrl.Front
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:5000");
+                    // webBuilder.UseConfiguration(GetConfiguration());
                     webBuilder.UseStartup<Startup>();
                 });
+
+        /*private static IConfigurationRoot GetConfiguration() => new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", false, true)
+            .Build();*/
     }
 }

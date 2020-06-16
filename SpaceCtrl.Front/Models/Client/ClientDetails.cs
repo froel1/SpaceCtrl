@@ -11,17 +11,15 @@ namespace SpaceCtrl.Front.Models.Client
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string GroupName { get; set; }
-        public ClientType Type { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
 
-        public ClientDetails(int id, string firstName, string lastName, string groupName, ClientType type, DateTime date, bool isActive)
+        public ClientDetails(int id, string firstName, string lastName, string groupName, DateTime date, bool isActive)
         {
             Id = id;
             FirstName = firstName;
             LastName = lastName;
             GroupName = groupName;
-            Type = type;
             CreateDate = date;
             IsActive = isActive;
         }

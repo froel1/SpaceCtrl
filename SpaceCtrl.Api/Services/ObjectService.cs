@@ -6,11 +6,14 @@ using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
 using SpaceCtrl.Api.Models.Camera;
 using SpaceCtrl.Api.Models.Settings;
 using SpaceCtrl.Data.Database.DbObjects;
+using DateTime = System.DateTime;
+using Object = SpaceCtrl.Data.Database.DbObjects.Object;
 
 namespace SpaceCtrl.Api.Services
 {
@@ -29,51 +32,61 @@ namespace SpaceCtrl.Api.Services
 
         public async Task SaveObjectAsync(CameraObject @object, Guid deviceKey)
         {
-            var objects = new List<Data.Database.DbObjects.Object>();
+            var objects = new List<Object>();
             var deviceId = (await _device.GetAsync(deviceKey))!.DeviceId;
+            var personKeys = @object.Data.Keys.Select(Guid.Parse).ToList();
 
-            var timer = new Stopwatch();
-            timer.Start();
+            var persons = await _dbContext.Person
+                .Include(x => x.Group).ThenInclude(x => x.GroupShift)
+                .Where(x => personKeys.Contains(x.Key) && x.IsActive).ToListAsync();
+
             Log.Information("Group date {date}", @object.Date);
+
             foreach (var (key, model) in @object.Data)
             {
-                /*Image image;
-                try
-                {
-                    image = await SaveImageAsync(model);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    continue;
-                }*/
                 Log.Information("Saving Object {objectId}, with count {count}", key, model.PersonCount);
-
-                objects.Add(new Data.Database.DbObjects.Object
+                var dbObject = new Object
                 {
                     CreateDate = DateTime.Now,
                     DeviceId = deviceId,
                     ChannelId = @object.CameraId,
-                    Direction = (int)@object.Direction,
                     PersonKey = Guid.Parse(key),
                     FrameDate = DateTime.Parse(@object.Date),
                     Frame = await SaveImageAsync(model),
                     PersonCount = model.PersonCount
-                });
-            }
+                };
 
-            timer.Stop();
-            Log.Debug($"Saved in {timer.Elapsed}\n\n");
+                FillGroupEntry(persons, dbObject);
+
+                objects.Add(dbObject);
+            }
 
             await _dbContext.Object.AddRangeAsync(objects);
             await _dbContext.SaveChangesAsync();
+        }
+
+        private static void FillGroupEntry(IEnumerable<Person> persons, Object @object)
+        {
+            var person = persons.FirstOrDefault(x => x.Key == @object.PersonKey);
+
+            var shift = person?.Group.GroupShift.OrderByDescending(x => x.WeekNumber).FirstOrDefault();
+            if (shift is null || (DateTime.Now < shift.StartDate || DateTime.Now > shift.EndDate))
+                return;
+
+            shift.GroupEntry.Add(new GroupEntry
+            {
+                Direction = (int)Direction.In,
+                CreateDate = @object.FrameDate,
+                PersonId = person.Id,
+                FrameId = @object.Frame.Id
+            });
         }
 
         private async Task<Frame> SaveImageAsync(DataModel model)
         {
             var id = Guid.NewGuid();
             var bytes = Convert.FromBase64String(model.Base64Image);
-            var path = Path.Combine(_settings.ImagePath, $"{id}{model.ImageType}");
+            var path = Path.Combine(_settings.Image.BasePath, $"{id}{model.ImageType}");
 
             await File.WriteAllBytesAsync(path, bytes);
 

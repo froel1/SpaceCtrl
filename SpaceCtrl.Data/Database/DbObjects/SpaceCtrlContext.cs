@@ -18,17 +18,16 @@ namespace SpaceCtrl.Data.Database.DbObjects
         public virtual DbSet<Channel> Channel { get; set; }
         public virtual DbSet<Device> Device { get; set; }
         public virtual DbSet<Frame> Frame { get; set; }
+        public virtual DbSet<GroupEntry> GroupEntry { get; set; }
+        public virtual DbSet<GroupShift> GroupShift { get; set; }
         public virtual DbSet<Object> Object { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<PersonGroup> PersonGroup { get; set; }
+        public virtual DbSet<PersonImages> PersonImages { get; set; }
+        public virtual DbSet<ShiftType> ShiftType { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=157.230.127.53;Database=SpaceCtrl;User Id=sa;Password=kEEp4izontal;");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -75,6 +74,50 @@ namespace SpaceCtrl.Data.Database.DbObjects
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<GroupEntry>(entity =>
+            {
+                entity.ToTable("GroupEntry", "grp");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Frame)
+                    .WithMany(p => p.GroupEntry)
+                    .HasForeignKey(d => d.FrameId)
+                    .HasConstraintName("FK_GroupEntry_Frame");
+
+                entity.HasOne(d => d.GroupShift)
+                    .WithMany(p => p.GroupEntry)
+                    .HasForeignKey(d => d.GroupShiftId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GroupEntry_GroupShift");
+
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.GroupEntry)
+                    .HasForeignKey(d => d.PersonId)
+                    .HasConstraintName("FK_GroupEntry_Person1");
+            });
+
+            modelBuilder.Entity<GroupShift>(entity =>
+            {
+                entity.ToTable("GroupShift", "grp");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Group)
+                    .WithMany(p => p.GroupShift)
+                    .HasForeignKey(d => d.GroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GroupShift_PersonGroup");
+
+                entity.HasOne(d => d.ShiftTypeNavigation)
+                    .WithMany(p => p.GroupShift)
+                    .HasForeignKey(d => d.ShiftType)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_GroupShift_ShiftType");
+            });
+
             modelBuilder.Entity<Object>(entity =>
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
@@ -119,6 +162,8 @@ namespace SpaceCtrl.Data.Database.DbObjects
 
             modelBuilder.Entity<PersonGroup>(entity =>
             {
+                entity.ToTable("PersonGroup", "grp");
+
                 entity.Property(e => e.Description)
                     .IsRequired()
                     .HasMaxLength(255);
@@ -126,6 +171,38 @@ namespace SpaceCtrl.Data.Database.DbObjects
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(255);
+            });
+
+            modelBuilder.Entity<PersonImages>(entity =>
+            {
+                entity.HasKey(e => new { e.PersonId, e.FrameId });
+
+                entity.HasOne(d => d.Frame)
+                    .WithMany(p => p.PersonImages)
+                    .HasForeignKey(d => d.FrameId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonImages_Frame");
+
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.PersonImages)
+                    .HasForeignKey(d => d.PersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonImages_Person");
+            });
+
+            modelBuilder.Entity<ShiftType>(entity =>
+            {
+                entity.ToTable("ShiftType", "grp");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
             });
 
             OnModelCreatingPartial(modelBuilder);

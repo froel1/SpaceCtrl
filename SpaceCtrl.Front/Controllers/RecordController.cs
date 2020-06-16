@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using SpaceCtrl.Front.Models.Client.Groups;
 using SpaceCtrl.Front.Models.Common;
 using SpaceCtrl.Front.Models.Record;
 using SpaceCtrl.Front.Services;

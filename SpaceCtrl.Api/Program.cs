@@ -17,9 +17,7 @@ namespace SpaceCtrl.Api
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseUrls("http://*:5000");
                     webBuilder.UseStartup<Startup>();
-                }).UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration
-                    .ReadFrom.Configuration(hostingContext.Configuration).WriteTo.Console());
+                });
     }
 }
