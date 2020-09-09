@@ -56,7 +56,7 @@ namespace SpaceCtrl.Api.Services
                     PersonCount = model.PersonCount
                 };
 
-                FillGroupEntry(persons, dbObject);
+                //FillGroupEntry(persons, dbObject);
 
                 objects.Add(dbObject);
             }
