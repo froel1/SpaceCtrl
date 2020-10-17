@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using SpaceCtrl.Api.Models.Settings;
 using SpaceCtrl.Api.Services;
 using SpaceCtrl.Data.Database.DbObjects;
+using SpaceCtrl.Front.Extensions;
 
 namespace SpaceCtrl.Api
 {
@@ -64,27 +65,11 @@ namespace SpaceCtrl.Api
 
             app.UseAuthorization();
 
-            ConfigureSwagger(app);
+            app.ConfigureSwagger();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
-        }
-
-        private void ConfigureSwagger(IApplicationBuilder app)
-        {
-            var swagger = new SwaggerOptions();
-            Configuration.GetSection("Swagger").Bind(swagger);
-
-            app.UseSwagger(options =>
-            {
-                options.RouteTemplate = swagger.JsonRoute;
-            });
-
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint(swagger.UiEndpoint, swagger.Description);
             });
         }
 

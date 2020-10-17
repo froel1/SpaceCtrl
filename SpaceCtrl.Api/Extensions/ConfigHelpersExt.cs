@@ -13,7 +13,7 @@ namespace SpaceCtrl.Front.Extensions
 
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("v1/swagger.json", "Space Ctrl Front");
+                options.SwaggerEndpoint("v1/swagger.json", "Space Ctrl Api");
             });
 
             return app;
