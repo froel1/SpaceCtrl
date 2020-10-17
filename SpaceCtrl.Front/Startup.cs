@@ -11,6 +11,7 @@ using SpaceCtrl.Data.Database.DbObjects;
 using SpaceCtrl.Data.Interfaces;
 using SpaceCtrl.Data.Services;
 using SpaceCtrl.Front.BackgroundServices;
+using SpaceCtrl.Front.Extensions;
 using SpaceCtrl.Front.Models.Settings;
 using SpaceCtrl.Front.Services;
 
@@ -77,29 +78,13 @@ namespace SpaceCtrl.Front
 
             app.UseCors("DefaultPolicy");
 
-            ConfigureSwagger(app);
+            app.ConfigureSwagger();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Client}/{action=Index}/{id?}");
-            });
-        }
-
-        private void ConfigureSwagger(IApplicationBuilder app)
-        {
-            var settings = new AppSettings();
-            Configuration.Bind(settings);
-
-            app.UseSwagger(options =>
-            {
-                options.RouteTemplate = settings.Swagger.JsonRoute;
-            });
-
-            app.UseSwaggerUI(options =>
-            {
-                options.SwaggerEndpoint(settings.Swagger.UiEndpoint, settings.Swagger.Description);
             });
         }
 

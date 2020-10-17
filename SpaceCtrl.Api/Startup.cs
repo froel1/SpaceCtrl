@@ -41,7 +41,7 @@ namespace SpaceCtrl.Api
 
             services.AddSwaggerGen(opt =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceCtrl Front", Version = "v1" });
+                opt.SwaggerDoc("v1", new OpenApiInfo { Title = "SpaceCtrl Api", Version = "v1" });
             });
         }
 
